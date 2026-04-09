@@ -2,12 +2,18 @@
 
 This repo runs with Docker Compose using PostgreSQL + PostgREST (Supabase-style API), plus separate backend/frontend app containers from Docker Hub.
 
-## ✅ Your Docker Hub screenshot check
+## Quick answer to your question
 
-From your screenshot, I can confirm this part is good:
-- `wesrodd/athenaeum-frontend` exists.
+**With the current `docker-compose.yml` (image-based):**
+- ✅ You can pull and run team images quickly.
+- ✅ You can test the running app.
+- ❌ You **cannot live-debug local source edits** automatically, because Compose is pulling prebuilt images (not mounting your source code into a dev container).
 
-Use the backend image name as `wesrodd/athenaeum-backend` (as requested).
+So your current flow is:
+1. Edit and test code locally in your own dev setup.
+2. Build/push new Docker image(s) to Docker Hub.
+3. Run `docker compose pull backend frontend`.
+4. Restart with `docker compose up -d`.
 
 ## 1) Configure image names (important)
 
@@ -24,7 +30,7 @@ BACKEND_IMAGE=wesrodd/athenaeum-backend:latest
 FRONTEND_IMAGE=wesrodd/athenaeum-frontend:latest
 ```
 
-If you publish a different tag later, just update `BACKEND_IMAGE`.
+If you publish a different tag later, just update these values.
 
 ## 2) Start and stop containers
 
@@ -43,7 +49,7 @@ docker compose ps
 docker compose logs -f --tail=100
 ```
 
-## 3) Team update flow (manual push + always pull latest images)
+## 3) Team update flow (always get latest images)
 
 When a teammate pushes new frontend/backend images:
 
@@ -59,18 +65,25 @@ docker compose pull
 docker compose up -d
 ```
 
-## 4) Live edits vs Docker Hub images
+## 4) Build and push updated images to Docker Hub
 
-Because this Compose file uses published Docker Hub images, local code edits are not live-mounted.
+After your code changes are tested and ready:
 
-Expected flow:
-1. edit code
-2. build + push image(s)
-3. teammates `docker compose pull` + restart
+```bash
+# Backend
+docker build -t wesrodd/athenaeum-backend:latest -f Dockerfile.backend .
+docker push wesrodd/athenaeum-backend:latest
 
-## 5) Git flow for group work
+# Frontend
+docker build -t wesrodd/athenaeum-frontend:latest -f Dockerfile.frontend .
+docker push wesrodd/athenaeum-frontend:latest
+```
 
-Before every manual push:
+If your repo uses different Dockerfile names, replace `Dockerfile.backend` / `Dockerfile.frontend` accordingly.
+
+## 5) Git flow for group work (manual push + fetch latest first)
+
+Before every manual git push:
 
 ```bash
 git fetch --all --prune
