@@ -39,6 +39,7 @@ services:
   # App backend image (override with BACKEND_IMAGE in .env)
   backend:
     image: ${BACKEND_IMAGE:-wesrodd/athenaeum-backend:latest}
+    pull_policy: always
     restart: unless-stopped
     depends_on:
       db:
@@ -57,6 +58,7 @@ services:
   # Frontend image (override with FRONTEND_IMAGE in .env)
   frontend:
     image: ${FRONTEND_IMAGE:-wesrodd/athenaeum-frontend:latest}
+    pull_policy: always
     restart: unless-stopped
     depends_on:
       - backend
