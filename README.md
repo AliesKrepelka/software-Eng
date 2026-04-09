@@ -1,18 +1,35 @@
 # Athenaeum Docker + Supabase Workflow
 
-This repo is set up to run with Docker Compose using PostgreSQL + PostgREST (Supabase-style API), plus backend and frontend containers.
+This repo runs with Docker Compose using PostgreSQL + PostgREST (Supabase-style API), plus separate backend/frontend app containers from Docker Hub.
 
-## ✅ Will this work for a team using **separate frontend/backend Docker Hub images**?
+## ✅ Your Docker Hub screenshot check
 
-Yes — this setup is made for that exact model:
+From your screenshot, I can confirm this part is good:
+- `wesrodd/athenaeum-frontend` exists.
 
-- `backend` uses `wesrodd/athenaeum-backend:latest`
-- `frontend` uses `wesrodd/athenaeum-frontend:latest`
-- your group just needs the same repo files and Docker installed
+But your second repo appears to be named:
+- `wesrodd/athenaeum-backend-test`
 
-Services in `docker-compose.yml` are separate containers and can be updated independently by pulling newer images before restart.
+So if your real backend image is `athenaeum-backend-test`, set that explicitly in `.env` (see below), otherwise Compose will try `wesrodd/athenaeum-backend:latest`.
 
-## 1) Start and stop containers reliably
+## 1) Configure image names (important)
+
+Create `.env` from template:
+
+```bash
+cp .env.example .env
+```
+
+Then set the two image variables to match Docker Hub exactly:
+
+```env
+BACKEND_IMAGE=wesrodd/athenaeum-backend-test:latest
+FRONTEND_IMAGE=wesrodd/athenaeum-frontend:latest
+```
+
+If you later rename/publish a non-test backend image, just update `BACKEND_IMAGE`.
+
+## 2) Start and stop containers
 
 ```bash
 docker compose up -d
@@ -29,35 +46,34 @@ docker compose ps
 docker compose logs -f --tail=100
 ```
 
-## 2) Image-based workflow for group mates (recommended)
+## 3) Team update flow (manual push + always pull latest images)
 
-When someone on the team pushes a new Docker image:
+When a teammate pushes new frontend/backend images:
 
 ```bash
 docker compose pull backend frontend
 docker compose up -d
 ```
 
-If DB/PostgREST image versions also changed:
+If DB/PostgREST versions changed too:
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-## 3) Live edits vs Docker Hub images (important)
+## 4) Live edits vs Docker Hub images
 
-Current `docker-compose.yml` uses published images (`wesrodd/athenaeum-*`).
-That means **local code edits will not appear live** until you build and push a new image tag.
+Because this Compose file uses published Docker Hub images, local code edits are not live-mounted.
 
-So the flow is:
-1. Edit code locally
-2. Build/push updated image(s)
-3. Teammates run `docker compose pull ...` and restart
+Expected flow:
+1. edit code
+2. build + push image(s)
+3. teammates `docker compose pull` + restart
 
-## 4) Git workflow for team collaboration (manual push + always fetch latest)
+## 5) Git flow for group work
 
-Use this every time before you push:
+Before every manual push:
 
 ```bash
 git fetch --all --prune
@@ -65,22 +81,10 @@ git status
 git rebase origin/$(git rev-parse --abbrev-ref HEAD)
 ```
 
-Then push manually only when ready:
+Then push:
 
 ```bash
 git push origin $(git rev-parse --abbrev-ref HEAD)
-```
-
-## 5) First-time setup
-
-```bash
-cp .env.example .env
-```
-
-Then start services:
-
-```bash
-docker compose up -d
 ```
 
 ## 6) Service endpoints

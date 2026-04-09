@@ -36,9 +36,9 @@ services:
       PGRST_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters}
       PGRST_DB_USE_LEGACY_GUCS: "false"
 
-  # App backend image
+  # App backend image (override with BACKEND_IMAGE in .env)
   backend:
-    image: wesrodd/athenaeum-backend:latest
+    image: ${BACKEND_IMAGE:-wesrodd/athenaeum-backend:latest}
     restart: unless-stopped
     depends_on:
       db:
@@ -54,9 +54,9 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD:-librarypassword}
       NODE_ENV: production
 
-  # Frontend image
+  # Frontend image (override with FRONTEND_IMAGE in .env)
   frontend:
-    image: wesrodd/athenaeum-frontend:latest
+    image: ${FRONTEND_IMAGE:-wesrodd/athenaeum-frontend:latest}
     restart: unless-stopped
     depends_on:
       - backend
