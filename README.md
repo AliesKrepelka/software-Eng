@@ -7,10 +7,7 @@ This repo runs with Docker Compose using PostgreSQL + PostgREST (Supabase-style 
 From your screenshot, I can confirm this part is good:
 - `wesrodd/athenaeum-frontend` exists.
 
-But your second repo appears to be named:
-- `wesrodd/athenaeum-backend-test`
-
-So if your real backend image is `athenaeum-backend-test`, set that explicitly in `.env` (see below), otherwise Compose will try `wesrodd/athenaeum-backend:latest`.
+Use the backend image name as `wesrodd/athenaeum-backend` (as requested).
 
 ## 1) Configure image names (important)
 
@@ -23,11 +20,11 @@ cp .env.example .env
 Then set the two image variables to match Docker Hub exactly:
 
 ```env
-BACKEND_IMAGE=wesrodd/athenaeum-backend-test:latest
+BACKEND_IMAGE=wesrodd/athenaeum-backend:latest
 FRONTEND_IMAGE=wesrodd/athenaeum-frontend:latest
 ```
 
-If you later rename/publish a non-test backend image, just update `BACKEND_IMAGE`.
+If you publish a different tag later, just update `BACKEND_IMAGE`.
 
 ## 2) Start and stop containers
 
