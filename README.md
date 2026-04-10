@@ -7,6 +7,16 @@ You now have **two modes**:
 
 ---
 
+
+## 0) If you previously had a broken init.sql
+
+If Postgres was initialized with bad data/scripts before this fix, reset once:
+
+```bash
+docker compose down -v
+docker compose up -d
+```
+
 ## 1) First-time setup
 
 ```bash

@@ -18,7 +18,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-libraryuser} -d ${POSTGRES_DB:-librarydb}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
 
   # PostgREST API layer for Supabase-style direct table access
   rest:
