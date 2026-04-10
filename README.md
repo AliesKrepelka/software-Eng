@@ -3,7 +3,7 @@
 You now have **two modes**:
 
 1. **Image mode (team stable)** → always pull latest Docker Hub images.
-2. **Live-debug mode (local dev)** → mount your local code while still starting from latest image.
+2. **Live-debug mode (local dev)** → live-debug backend code while keeping frontend on stable image at `localhost:8080`.
 
 ---
 
@@ -29,7 +29,6 @@ Confirm these values in `.env`:
 BACKEND_IMAGE=wesrodd/athenaeum-backend:latest
 FRONTEND_IMAGE=wesrodd/athenaeum-frontend:latest
 BACKEND_SRC=./backend
-FRONTEND_SRC=./frontend
 ```
 
 ---
@@ -58,8 +57,8 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 What this gives you:
 - backend runs `npm run dev` (for nodemon-style live reload)
-- frontend runs `npm run dev` and serves on `:8080`
-- local changes in `BACKEND_SRC` / `FRONTEND_SRC` are reflected live
+- frontend stays on Docker Hub image, so `localhost:8080` remains stable
+- local changes in `BACKEND_SRC` are reflected live
 
 ---
 
@@ -99,7 +98,22 @@ docker compose down -v
 
 ---
 
-## 6) Endpoints
+
+## 6) If `localhost:8080` is not loading
+
+Run:
+
+```bash
+docker compose ps
+docker compose logs frontend --tail=200
+```
+
+Common fixes:
+- make sure `frontend` container is `Up`
+- run `docker compose pull frontend && docker compose up -d frontend`
+- avoid overriding frontend in dev mode (this repo now keeps frontend image-based by default)
+
+## 7) Endpoints
 
 - Frontend: http://localhost:8080
 - Backend: http://localhost:4000
