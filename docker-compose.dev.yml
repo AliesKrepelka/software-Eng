@@ -1,0 +1,18 @@
+version: "3.8"
+
+# Live-debug overlay.
+# Use with: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# NOTE: This overlay only changes backend to avoid breaking frontend:8080 when
+# frontend image is Nginx/static-only.
+services:
+  backend:
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ${BACKEND_SRC:-./backend}:/app
+      - backend_node_modules:/app/node_modules
+    command: sh -c "npm install && npm run dev"
+
+volumes:
+  backend_node_modules:
